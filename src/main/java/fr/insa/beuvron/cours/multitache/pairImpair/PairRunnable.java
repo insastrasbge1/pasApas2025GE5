@@ -26,19 +26,28 @@ import fr.insa.beuvron.cours.multitache.Utils;
  */
 public class PairRunnable implements Runnable {
 
+    private String nom;
+
+    public PairRunnable(String nom) {
+        this.nom = nom;
+    }
+
     @Override
     public void run() {
-        Utils.sleepNoInterrupt(100);
         for (int i = 0; i < 10; i += 2) {
-            System.out.println(i);
+            Utils.sleepAlea(100);
+            System.out.println(this.nom + " : " + i);
         }
     }
-    
+
     public static void main(String[] args) {
-        PairRunnable p2 = new PairRunnable();
+        PairRunnable p2 = new PairRunnable("p1");
         Thread rp2 = new Thread(p2);
         rp2.start();
+        PairRunnable p3 = new PairRunnable("p2");
+        Thread rp3 = new Thread(p3);
+        rp3.start();
         System.out.println("fini");
     }
-    
+
 }
