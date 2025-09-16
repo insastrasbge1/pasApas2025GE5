@@ -19,41 +19,29 @@ along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
 package fr.insa.beuvron.cours.multitache.pairImpair;
 
 import fr.insa.beuvron.cours.multitache.Utils;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author fdebertranddeb01
  */
-public class PairRunnable implements Runnable {
-
-    private String nom;
-    
-    private int max;
-
-    public PairRunnable(String nom,int max) {
-        this.nom = nom;
-        this.max = max;
-    }
-
-    @Override
-    public void run() {
-        for (int i = 0; i < max; i += 2) {
-            Utils.sleepAlea(100);
-            System.out.println(this.nom + " : " + i);
-        }
-    }
+public class PairAnonyme {
 
     public static void main(String[] args) {
-        PairRunnable p2 = new PairRunnable("p1",10);
-        Thread rp2 = new Thread(p2);
+        String nom = "p1";
+        Thread rp2 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < 10; i += 2) {
+                    Utils.sleepAlea(100);
+                    System.out.println(nom + " : " + i);
+                }
+            }
+        });
         rp2.start();
-        PairRunnable p3 = new PairRunnable("p2",20);
-        Thread rp3 = new Thread(p3);
+        Thread rp3 = new Thread(() -> {
+            System.out.println("coucou");
+        });
         rp3.start();
-        Utils.joinNoInterrupt(rp2);
-        Utils.joinNoInterrupt(rp3);
         System.out.println("fini");
     }
 

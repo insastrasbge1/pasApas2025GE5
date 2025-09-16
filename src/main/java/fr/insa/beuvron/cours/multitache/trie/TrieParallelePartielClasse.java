@@ -18,20 +18,42 @@ along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.insa.beuvron.cours.multitache.trie;
 
+import fr.insa.beuvron.cours.multitache.Utils;
 import java.util.Arrays;
 
 /**
  *
  * @author fdebertranddeb01
  */
-public class TrieSequentiel {
+public class TrieParallelePartielClasse extends Thread{
     
-    public static void trie(int[] tab,int debut,int fin) {
-        if (fin-debut > 1) {
+    public static int MINPARA = 10000;
+    
+    private int[] tab;
+    private int debut;
+    private int fin;
+
+    public TrieParallelePartielClasse(int[] tab, int debut, int fin) {
+        this.tab = tab;
+        this.debut = debut;
+        this.fin = fin;
+    }
+    
+    
+    
+    @Override
+    public void run() {
+        if (fin-debut > MINPARA) {
             int milieu = debut + (fin - debut) / 2;
-            trie(tab,debut,milieu);
-            trie(tab,milieu,fin);
+            TrieParallelePartielClasse b1 = new TrieParallelePartielClasse(tab, debut, milieu);
+            TrieParallelePartielClasse b2 = new TrieParallelePartielClasse(tab, milieu, fin);
+            b1.start();
+            b2.start();
+            Utils.joinNoInterrupt(b1);
+            Utils.joinNoInterrupt(b2);
             fusion(tab,debut,milieu,fin);
+        } else {
+            TrieSequentiel.trie(tab, debut, fin);
         }
         
     }
@@ -78,29 +100,17 @@ public class TrieSequentiel {
         return res;
     }
     
-    public static boolean testTriePartiel(int[] tab,int debut,int fin) {
-        boolean res = true;
-        int i = debut;
-        while (res && i < fin) {
-            res = tab[i] < tab[i+1];
-            i ++;
-        }
-        return res;
-    }
-    
     public static void test1() {
-        int[] tab = tabAlea(1000, 100);
+        int[] tab = tabAlea(1000000, 100);
         long initial = System.currentTimeMillis();
 //        System.out.println(Arrays.toString(tab));
-        trie(tab, 0, tab.length);
-        System.out.println("ok : " + testTrie(tab));
+        TrieParallelePartielClasse t = new TrieParallelePartielClasse(tab, 0, tab.length);
+        t.start();
+        Utils.joinNoInterrupt(t);
+        System.out.println("ok ? : " + testTrie(tab));
         long duree = System.currentTimeMillis() - initial;
         System.out.println("en " + duree + " ms");
 //        System.out.println(Arrays.toString(tab));
-    }
-    
-    public static void testFusion() {
-        
     }
     
     public static void main(String[] args) {

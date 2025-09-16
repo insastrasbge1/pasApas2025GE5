@@ -18,19 +18,37 @@ along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.insa.beuvron.cours.multitache.trie;
 
+import fr.insa.beuvron.cours.multitache.Utils;
 import java.util.Arrays;
 
 /**
  *
  * @author fdebertranddeb01
  */
-public class TrieSequentiel {
+public class TrieParalleleClasse extends Thread{
     
-    public static void trie(int[] tab,int debut,int fin) {
+    private int[] tab;
+    private int debut;
+    private int fin;
+
+    public TrieParalleleClasse(int[] tab, int debut, int fin) {
+        this.tab = tab;
+        this.debut = debut;
+        this.fin = fin;
+    }
+    
+    
+    
+    @Override
+    public void run() {
         if (fin-debut > 1) {
             int milieu = debut + (fin - debut) / 2;
-            trie(tab,debut,milieu);
-            trie(tab,milieu,fin);
+            TrieParalleleClasse b1 = new TrieParalleleClasse(tab, debut, milieu);
+            TrieParalleleClasse b2 = new TrieParalleleClasse(tab, milieu, fin);
+            b1.start();
+            b2.start();
+            Utils.joinNoInterrupt(b1);
+            Utils.joinNoInterrupt(b2);
             fusion(tab,debut,milieu,fin);
         }
         
@@ -62,7 +80,7 @@ public class TrieSequentiel {
     
     public static int[] tabAlea(int taille,int maxVal) {
         int[] res = new int[taille];
-        for(int i = 0 ; i < res.length ; i ++) {
+        for(int i = 0 ; i <= res.length ; i ++) {
             res[i] = (int) (Math.random() * maxVal);
         }
         return res;
@@ -72,16 +90,6 @@ public class TrieSequentiel {
         boolean res = true;
         int i = 0;
         while (res && i < tab.length-1) {
-            res = tab[i] <= tab[i+1];
-            i ++;
-        }
-        return res;
-    }
-    
-    public static boolean testTriePartiel(int[] tab,int debut,int fin) {
-        boolean res = true;
-        int i = debut;
-        while (res && i < fin) {
             res = tab[i] < tab[i+1];
             i ++;
         }
@@ -89,18 +97,16 @@ public class TrieSequentiel {
     }
     
     public static void test1() {
-        int[] tab = tabAlea(1000, 100);
+        int[] tab = tabAlea(10000, 100);
         long initial = System.currentTimeMillis();
 //        System.out.println(Arrays.toString(tab));
-        trie(tab, 0, tab.length);
-        System.out.println("ok : " + testTrie(tab));
+        TrieParalleleClasse t = new TrieParalleleClasse(tab, 0, tab.length);
+        t.start();
+        Utils.joinNoInterrupt(t);
+        System.out.println("ok ? : " + testTrie(tab));
         long duree = System.currentTimeMillis() - initial;
         System.out.println("en " + duree + " ms");
 //        System.out.println(Arrays.toString(tab));
-    }
-    
-    public static void testFusion() {
-        
     }
     
     public static void main(String[] args) {

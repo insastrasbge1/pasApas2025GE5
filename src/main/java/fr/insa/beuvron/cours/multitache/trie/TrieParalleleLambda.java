@@ -18,19 +18,28 @@ along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.insa.beuvron.cours.multitache.trie;
 
+import fr.insa.beuvron.cours.multitache.Utils;
 import java.util.Arrays;
 
 /**
  *
  * @author fdebertranddeb01
  */
-public class TrieSequentiel {
+public class TrieParalleleLambda {
     
     public static void trie(int[] tab,int debut,int fin) {
         if (fin-debut > 1) {
             int milieu = debut + (fin - debut) / 2;
-            trie(tab,debut,milieu);
-            trie(tab,milieu,fin);
+            Thread b1 = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    trie(tab,debut,milieu);               }
+            });
+            Thread b2 = new Thread(() -> {trie(tab,milieu,fin);});
+            b1.start();
+            b2.start();
+            Utils.joinNoInterrupt(b1);
+            Utils.joinNoInterrupt(b2);
             fusion(tab,debut,milieu,fin);
         }
         
@@ -78,29 +87,12 @@ public class TrieSequentiel {
         return res;
     }
     
-    public static boolean testTriePartiel(int[] tab,int debut,int fin) {
-        boolean res = true;
-        int i = debut;
-        while (res && i < fin) {
-            res = tab[i] < tab[i+1];
-            i ++;
-        }
-        return res;
-    }
-    
     public static void test1() {
-        int[] tab = tabAlea(1000, 100);
-        long initial = System.currentTimeMillis();
+        int[] tab = tabAlea(10000, 100);
 //        System.out.println(Arrays.toString(tab));
         trie(tab, 0, tab.length);
         System.out.println("ok : " + testTrie(tab));
-        long duree = System.currentTimeMillis() - initial;
-        System.out.println("en " + duree + " ms");
 //        System.out.println(Arrays.toString(tab));
-    }
-    
-    public static void testFusion() {
-        
     }
     
     public static void main(String[] args) {

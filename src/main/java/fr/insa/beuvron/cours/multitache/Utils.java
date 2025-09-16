@@ -42,4 +42,12 @@ public class Utils {
         }
     }
 
+    public static void joinNoInterrupt(Thread aAttendre) {
+        try {
+            aAttendre.join();
+        } catch (InterruptedException ex) {
+            throw new Error("interruption non attendue");
+        }
+    }
+
 }
