@@ -19,7 +19,6 @@ along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
 package fr.insa.beuvron.cours.multitache.incremente;
 
 import fr.insa.beuvron.cours.multitache.Utils;
-import static fr.insa.beuvron.cours.multitache.incremente.IncrementeurStatique.compteur;
 
 /**
  *

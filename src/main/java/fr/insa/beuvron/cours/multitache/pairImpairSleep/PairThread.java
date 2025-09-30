@@ -18,10 +18,7 @@ along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.insa.beuvron.cours.multitache.pairImpairSleep;
 
-import fr.insa.beuvron.cours.multitache.pairImpair.*;
 import fr.insa.beuvron.cours.multitache.Utils;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
