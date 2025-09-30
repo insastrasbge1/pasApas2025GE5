@@ -32,6 +32,14 @@ public class Utils {
         }
     }
 
+    public static void waitNoInterrupt(Object verrou) {
+        try {
+            verrou.wait();
+        } catch (InterruptedException ex) {
+            throw new Error("interruption non attendue");
+        }
+    }
+
     public static void sleepAlea(long dureeBase) {
         try {
             double alea = Math.random() * 1.5 + 0.5;
