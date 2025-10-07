@@ -124,7 +124,7 @@ public class ProdConsoNotify {
         // test basique pour voir ce qui se passe
 //        test(5, 1, 1, 100, 200);
         // multi prod/conso
-        test(5, 5, 5, 100, 100);
+        test(5, 20, 5, 100, 100);
 
     }
 
