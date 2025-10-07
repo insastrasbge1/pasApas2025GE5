@@ -79,7 +79,7 @@ public class ComputeRunnable {
     }
     
     public static void main(String[] args) {
-        test(1000, 1000000);
+        test(100000, 10000);
     }
     
 }
