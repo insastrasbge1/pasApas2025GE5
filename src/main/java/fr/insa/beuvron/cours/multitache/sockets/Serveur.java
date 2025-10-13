@@ -31,6 +31,7 @@ import java.nio.charset.StandardCharsets;
  * @author francois
  */
 public class Serveur {
+
     public static final int PORT = 50001;
 
     public static void sansThread() {
@@ -41,7 +42,7 @@ public class Serveur {
             System.out.println("ip : " + host.getHostAddress());
             System.out.println("port : " + PORT);
             Socket soc = ss.accept();
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(soc.getInputStream(),StandardCharsets.UTF_8))) {
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(soc.getInputStream(), StandardCharsets.UTF_8))) {
                 String line;
                 while ((line = in.readLine()) != null) {
                     System.out.println("reçu : " + line + "\n");
@@ -51,10 +52,51 @@ public class Serveur {
             throw new Error(ex);
         }
     }
-    
-    public static void main(String[] args) {
-        sansThread();
+
+    public static class GereClient extends Thread {
+
+        private String clientName;
+        private Socket conn;
+
+        public GereClient(Socket conn) {
+            this.conn = conn;
+        }
+
+        @Override
+        public void run() {
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(this.conn.getInputStream(), StandardCharsets.UTF_8))) {
+                String line;
+                this.clientName = in.readLine();
+                while ((line = in.readLine()) != null) {
+                    System.out.println("reçu from : " + this.clientName + " : " + line + "\n");
+                }
+            } catch (IOException ex) {
+                throw new Error(ex);
+            }
+
+        }
     }
-    
-    
+
+    public static void multiClient() {
+        try {
+            Inet4Address host = INetAdressUtil.premiereAdresseNonLoopback();
+            ServerSocket ss = new ServerSocket(PORT, 10, host);
+            System.out.println("Serveur en attente :");
+            System.out.println("ip : " + host.getHostAddress());
+            System.out.println("port : " + PORT);
+            while (true) {
+                Socket soc = ss.accept();
+                new GereClient(soc).start();
+            }
+        } catch (IOException ex) {
+            throw new Error(ex);
+        }
+
+    }
+
+    public static void main(String[] args) {
+//        sansThread();
+        multiClient();
+    }
+
 }

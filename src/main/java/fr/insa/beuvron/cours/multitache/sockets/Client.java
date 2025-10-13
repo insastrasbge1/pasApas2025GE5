@@ -29,14 +29,15 @@ import java.nio.charset.StandardCharsets;
  * @author francois
  */
 public class Client {
-        public static void clientDirect() {
+
+    public static void clientDirect() {
         try {
             String adr = ConsoleFdB.entreeString("adresse serveur : ");
             int port = Serveur.PORT;
             Socket soc = new Socket(adr, port);
-            try (OutputStreamWriter out = new OutputStreamWriter(soc.getOutputStream(),StandardCharsets.UTF_8)) {
+            try (OutputStreamWriter out = new OutputStreamWriter(soc.getOutputStream(), StandardCharsets.UTF_8)) {
                 String mess = "";
-                while (! mess.equals("FIN")) {
+                while (!mess.equals("FIN")) {
                     mess = ConsoleFdB.entreeString("message : ");
                     out.write(mess + "\n");
                     out.flush();
@@ -46,9 +47,30 @@ public class Client {
             throw new Error(ex);
         }
     }
-    
+
+    public static void clientMulti() {
+        try {
+            String adr = ConsoleFdB.entreeString("adresse serveur : ");
+            String name = ConsoleFdB.entreeString("nom du client : ");
+            int port = Serveur.PORT;
+            Socket soc = new Socket(adr, port);
+            try (OutputStreamWriter out = new OutputStreamWriter(soc.getOutputStream(), StandardCharsets.UTF_8)) {
+                out.write(name + "\n");
+                String mess = "";
+                while (!mess.equals("FIN")) {
+                    mess = ConsoleFdB.entreeString("message : ");
+                    out.write(mess + "\n");
+                    out.flush();
+                }
+            }
+        } catch (IOException ex) {
+            throw new Error(ex);
+        }
+    }
+
     public static void main(String[] args) {
-        clientDirect();
+//        clientDirect();
+        clientMulti();
     }
 
 }
