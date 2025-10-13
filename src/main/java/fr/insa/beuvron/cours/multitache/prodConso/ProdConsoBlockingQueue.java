@@ -21,14 +21,16 @@ package fr.insa.beuvron.cours.multitache.prodConso;
 import fr.insa.beuvron.cours.multitache.Utils;
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  *
  * @author fdebertranddeb01
  */
-public class ProdConsoNotify {
+public class ProdConsoBlockingQueue {
 
-    private LinkedList<String> buffer;
+    private BlockingQueue<String> buffer;
 
     private int maxElems;
     private long tempsProd;
@@ -36,35 +38,26 @@ public class ProdConsoNotify {
 
     private Random rand = new Random();
 
-    public ProdConsoNotify(int maxElems, long tempsProd, long tempsConso) {
-        this.buffer = new LinkedList<>();
+    public ProdConsoBlockingQueue(int maxElems, long tempsProd, long tempsConso) {
+        this.buffer = new LinkedBlockingDeque<>(maxElems);
         this.maxElems = maxElems;
         this.tempsProd = tempsProd;
         this.tempsConso = tempsConso;
     }
 
     public void add(String toAdd) {
-        synchronized (this.buffer) {
-            while (this.buffer.size() >= this.maxElems) {
-                System.out.println("buffer plein ==> attente consomateurs");
-                Utils.waitNoInterrupt(this.buffer);
-            }
-            this.buffer.offer(toAdd);
-            System.out.println("j'ajoute " + toAdd + " --> elems : " + this.buffer.size());
-            this.buffer.notifyAll();
+        try {
+            this.buffer.put(toAdd);
+        } catch (InterruptedException ex) {
+            throw new Error("no interrupt expected",ex);
         }
     }
 
     public String recup() {
-        synchronized (this.buffer) {
-            while (this.buffer.isEmpty()) {
-                System.out.println("buffer vide ==> attente producteurs");
-                Utils.waitNoInterrupt(this.buffer);
-            }
-            String res = this.buffer.poll();
-            System.out.println("recup : " + res + " --> elems : " + this.buffer.size());
-            this.buffer.notifyAll();
-            return res;
+        try {
+            return this.buffer.take();
+        } catch (InterruptedException ex) {
+            throw new Error("no interrupt expected",ex);
         }
     }
 
@@ -108,7 +101,7 @@ public class ProdConsoNotify {
 
     public static void test(int tailleBuffer, int nbrProd, int nbrConso,
             long tempsProd, long tempsConso) {
-        ProdConsoNotify pc = new ProdConsoNotify(tailleBuffer, tempsProd, tempsConso);
+        ProdConsoBlockingQueue pc = new ProdConsoBlockingQueue(tailleBuffer, tempsProd, tempsConso);
         for (int i = 0; i < nbrProd; i++) {
             Producteur p = pc.new Producteur("P" + i);
             p.start();

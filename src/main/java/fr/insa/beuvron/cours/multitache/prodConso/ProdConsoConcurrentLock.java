@@ -21,14 +21,20 @@ package fr.insa.beuvron.cours.multitache.prodConso;
 import fr.insa.beuvron.cours.multitache.Utils;
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  *
  * @author fdebertranddeb01
  */
-public class ProdConsoNotify {
+public class ProdConsoConcurrentLock {
 
     private LinkedList<String> buffer;
+
+    private ReentrantLock lock;
+    private Condition condEmpty;
+    private Condition condFull;
 
     private int maxElems;
     private long tempsProd;
@@ -36,35 +42,44 @@ public class ProdConsoNotify {
 
     private Random rand = new Random();
 
-    public ProdConsoNotify(int maxElems, long tempsProd, long tempsConso) {
+    public ProdConsoConcurrentLock(int maxElems, long tempsProd, long tempsConso) {
         this.buffer = new LinkedList<>();
         this.maxElems = maxElems;
         this.tempsProd = tempsProd;
         this.tempsConso = tempsConso;
+        this.lock = new ReentrantLock(true);
+        this.condEmpty = this.lock.newCondition();
+        this.condFull = this.lock.newCondition();
     }
 
     public void add(String toAdd) {
-        synchronized (this.buffer) {
+        this.lock.lock();
+        try {
             while (this.buffer.size() >= this.maxElems) {
                 System.out.println("buffer plein ==> attente consomateurs");
-                Utils.waitNoInterrupt(this.buffer);
+                Utils.awaitNoInterrupt(this.condFull);
             }
             this.buffer.offer(toAdd);
             System.out.println("j'ajoute " + toAdd + " --> elems : " + this.buffer.size());
-            this.buffer.notifyAll();
+            this.condEmpty.signal();
+        } finally {
+            this.lock.unlock();
         }
     }
 
     public String recup() {
-        synchronized (this.buffer) {
+        this.lock.lock();
+        try {
             while (this.buffer.isEmpty()) {
                 System.out.println("buffer vide ==> attente producteurs");
-                Utils.waitNoInterrupt(this.buffer);
+                Utils.awaitNoInterrupt(this.condEmpty);
             }
             String res = this.buffer.poll();
             System.out.println("recup : " + res + " --> elems : " + this.buffer.size());
-            this.buffer.notifyAll();
+            this.condFull.signal();
             return res;
+        } finally {
+            this.lock.unlock();
         }
     }
 
@@ -108,7 +123,7 @@ public class ProdConsoNotify {
 
     public static void test(int tailleBuffer, int nbrProd, int nbrConso,
             long tempsProd, long tempsConso) {
-        ProdConsoNotify pc = new ProdConsoNotify(tailleBuffer, tempsProd, tempsConso);
+        ProdConsoConcurrentLock pc = new ProdConsoConcurrentLock(tailleBuffer, tempsProd, tempsConso);
         for (int i = 0; i < nbrProd; i++) {
             Producteur p = pc.new Producteur("P" + i);
             p.start();
