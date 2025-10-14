@@ -18,6 +18,8 @@ along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.insa.beuvron.cours.multitache;
 
+import java.util.concurrent.locks.Condition;
+
 /**
  *
  * @author fdebertranddeb01
@@ -35,6 +37,14 @@ public class Utils {
     public static void waitNoInterrupt(Object verrou) {
         try {
             verrou.wait();
+        } catch (InterruptedException ex) {
+            throw new Error("interruption non attendue");
+        }
+    }
+
+    public static void awaitNoInterrupt(Condition cond) {
+        try {
+            cond.await();
         } catch (InterruptedException ex) {
             throw new Error("interruption non attendue");
         }
