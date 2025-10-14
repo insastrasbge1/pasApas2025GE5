@@ -69,8 +69,8 @@ public class Client {
     }
 
     public static void main(String[] args) {
-//        clientDirect();
-        clientMulti();
+        clientDirect();
+//        clientMulti();
     }
 
 }
