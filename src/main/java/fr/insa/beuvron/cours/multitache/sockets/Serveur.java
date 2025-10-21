@@ -95,8 +95,8 @@ public class Serveur {
     }
 
     public static void main(String[] args) {
-//        sansThread();
-        multiClient();
+        sansThread();
+//        multiClient();
     }
 
 }

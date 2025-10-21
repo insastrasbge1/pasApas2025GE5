@@ -21,18 +21,22 @@ package fr.insa.beuvron.cours.multitache.prodConso;
 import fr.insa.beuvron.cours.multitache.Utils;
 import java.util.LinkedList;
 import java.util.Random;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  *
  * @author fdebertranddeb01
  */
-public class ProdConsoBlockingQueue {
+public class ProdConsoLock {
 
-    private BlockingQueue<String> buffer;
+    private LinkedList<String> buffer;
+    
+    private ReentrantLock lock;
+    
+    private Condition condEmpty;
+    private Condition condFull;
+    
 
     private int maxElems;
     private long tempsProd;
@@ -40,37 +44,46 @@ public class ProdConsoBlockingQueue {
 
     private Random rand = new Random();
 
-    public ProdConsoBlockingQueue(int maxElems, long tempsProd, long tempsConso) {
-        this.buffer = new ArrayBlockingQueue<>(maxElems);
+    public ProdConsoLock(int maxElems, long tempsProd, long tempsConso) {
+        this.buffer = new LinkedList<>();
+        this.lock = new ReentrantLock(true);
+        this.condEmpty = this.lock.newCondition();
+        this.condFull = this.lock.newCondition();
         this.maxElems = maxElems;
         this.tempsProd = tempsProd;
         this.tempsConso = tempsConso;
     }
 
     public void add(String toAdd) {
+        this.lock.lock();
         try {
-            long debut = System.currentTimeMillis();
-            this.buffer.put(toAdd);
-            long duree = System.currentTimeMillis() - debut;
-            if (duree > 20) {
-                System.out.println("Attente add : " + duree);
+            while (this.buffer.size() >= this.maxElems) {
+                System.out.println("buffer plein ==> attente consomateurs");
+                Utils.awaitNoInterrupt(this.condFull);
             }
-        } catch (InterruptedException ex) {
-            throw new Error(ex);
+            this.buffer.offer(toAdd);
+            System.out.println("j'ajoute " + toAdd + " --> elems : " + this.buffer.size());
+            this.condEmpty.signal();
+        }
+        finally {
+            this.lock.unlock();
         }
     }
 
     public String recup() {
+        this.lock.lock();
         try {
-            long debut = System.currentTimeMillis();
-            String res = this.buffer.take();
-            long duree = System.currentTimeMillis() - debut;
-            if (duree > 20) {
-                System.out.println("Attente recup : " + duree);
+            while (this.buffer.isEmpty()) {
+                System.out.println("buffer vide ==> attente producteurs");
+                Utils.awaitNoInterrupt(this.condEmpty);
             }
+            String res = this.buffer.poll();
+            System.out.println("recup : " + res + " --> elems : " + this.buffer.size());
+            this.condFull.signal();
             return res;
-        } catch (InterruptedException ex) {
-            throw new Error(ex);
+        }
+        finally {
+            this.lock.unlock();
         }
     }
 
@@ -114,7 +127,7 @@ public class ProdConsoBlockingQueue {
 
     public static void test(int tailleBuffer, int nbrProd, int nbrConso,
             long tempsProd, long tempsConso) {
-        ProdConsoBlockingQueue pc = new ProdConsoBlockingQueue(tailleBuffer, tempsProd, tempsConso);
+        ProdConsoLock pc = new ProdConsoLock(tailleBuffer, tempsProd, tempsConso);
         for (int i = 0; i < nbrProd; i++) {
             Producteur p = pc.new Producteur("P" + i);
             p.start();
@@ -130,7 +143,12 @@ public class ProdConsoBlockingQueue {
         // test basique pour voir ce qui se passe
 //        test(5, 1, 1, 100, 200);
         // multi prod/conso
-        test(5, 5, 2, 100, 100);
+        // trop de prod
+//        test(5, 20, 5, 100, 100);
+        // trop de conso
+        test(5, 5, 20, 100, 100);
+        // equilibre prod/conso
+        test(5, 10, 10, 100, 100);
 
     }
 
