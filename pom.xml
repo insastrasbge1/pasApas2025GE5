@@ -11,8 +11,24 @@
         <exec.mainClass>fr.insa.beuvron.cours.multitache.PasApas2025GE5</exec.mainClass>
     </properties>
     
-            <build>
+    <dependencies>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>20.0.1</version>
+        </dependency>
+    </dependencies>
+    
+    <build>
         <plugins>
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
+                <configuration>
+                    <mainClass>fr.insa.beuvron.cours.javaFX.MainFX</mainClass>
+                </configuration>
+            </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.6.0</version>
