@@ -81,7 +81,8 @@ public class MessageSender extends Thread {
                         throw new Error(ex);
                     }
                 }
-                String concat = this.messages.stream().collect(Collectors.joining("\n"));
+                String concat = this.messages.stream().collect(Collectors.joining(
+                        "\n","----debut transmission----\n","\n----fin transmission----\n"));
                 this.taMessages.appendText(concat);
                 this.messages.clear();
             } finally {
