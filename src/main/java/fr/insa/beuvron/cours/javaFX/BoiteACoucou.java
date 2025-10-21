@@ -18,6 +18,7 @@ along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.insa.beuvron.cours.javaFX;
 
+import fr.insa.beuvron.cours.multitache.Utils;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -37,6 +38,7 @@ public class BoiteACoucou extends BorderPane{
     public Button bCoucou;
     public Button bSalut;
     public Button bAutoSend;
+    public Button bAttends;
     
     public BoiteACoucou() {
         this.tfNom = new TextField();
@@ -55,7 +57,11 @@ public class BoiteACoucou extends BorderPane{
 //    public static void testSenders(TextArea ta, long refreshRateInNanos, int nbrSender, long frequenceAleaMessagesInMs, long totTime) {
             MessageSender.testSenders(this.taMessage, 1000000, 5, 500, 5*1000);
         });
-        HBox hbBoutons = new HBox(this.bCoucou,this.bSalut,this.bAutoSend);
+        this.bAttends = new Button("attente");
+        this.bAttends.setOnAction((t) -> {
+            Utils.sleepNoInterrupt(10*1000);
+        });
+        HBox hbBoutons = new HBox(this.bCoucou,this.bSalut,this.bAutoSend,this.bAttends);
         this.setTop(hbNom);
         this.setCenter(this.taMessage);
         this.setBottom(hbBoutons);

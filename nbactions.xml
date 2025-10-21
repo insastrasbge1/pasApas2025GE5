@@ -8,4 +8,12 @@
                 <goal>javafx:run</goal>
             </goals>
         </action>
+        <action>
+            <actionName>CUSTOM-runFx2</actionName>
+            <displayName>runFx2</displayName>
+            <goals>
+                <goal>clean</goal>
+                <goal>javafx:run</goal>
+            </goals>
+        </action>
     </actions>
