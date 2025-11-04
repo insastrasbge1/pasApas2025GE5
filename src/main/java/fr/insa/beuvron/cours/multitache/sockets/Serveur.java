@@ -42,6 +42,11 @@ public class Serveur {
             System.out.println("ip : " + host.getHostAddress());
             System.out.println("port : " + PORT);
             Socket soc = ss.accept();
+            System.out.println("Connexion acceptée :");
+            System.out.println("  Adresse client : " + soc.getInetAddress().getHostAddress());
+            System.out.println("  Port client    : " + soc.getPort());
+            System.out.println("  Adresse locale : " + soc.getLocalAddress().getHostAddress());
+            System.out.println("  Port local     : " + soc.getLocalPort());
             try (BufferedReader in = new BufferedReader(new InputStreamReader(soc.getInputStream(), StandardCharsets.UTF_8))) {
                 String line;
                 while ((line = in.readLine()) != null) {

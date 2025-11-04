@@ -21,6 +21,7 @@ package fr.insa.beuvron.cours.multitache.sockets;
 import fr.insa.beuvron.utils.ConsoleFdB;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
@@ -34,7 +35,9 @@ public class Client {
         try {
             String adr = ConsoleFdB.entreeString("adresse serveur : ");
             int port = Serveur.PORT;
-            Socket soc = new Socket(adr, port);
+            int forceLocalPort = ConsoleFdB.entreeInt("port local à utiliser : ");
+            Socket soc = new Socket(adr, port,null,forceLocalPort);
+//            Socket soc = new Socket(adr, port);
             try (OutputStreamWriter out = new OutputStreamWriter(soc.getOutputStream(), StandardCharsets.UTF_8)) {
                 String mess = "";
                 while (!mess.equals("FIN")) {
