@@ -35,9 +35,14 @@ public class Client {
         try {
             String adr = ConsoleFdB.entreeString("adresse serveur : ");
             int port = Serveur.PORT;
-            int forceLocalPort = ConsoleFdB.entreeInt("port local à utiliser : ");
-            Socket soc = new Socket(adr, port,null,forceLocalPort);
+            int forceLocalPort = ConsoleFdB.entreeInt("port local à utiliser (0 pour automatique) : ");
+            Socket soc = new Socket(adr, port, null, forceLocalPort);
 //            Socket soc = new Socket(adr, port);
+            System.out.println("Connexion acceptée :");
+            System.out.println("  Adresse serveur : " + soc.getInetAddress().getHostAddress());
+            System.out.println("  Port serveur    : " + soc.getPort());
+            System.out.println("  Adresse locale : " + soc.getLocalAddress().getHostAddress());
+            System.out.println("  Port local     : " + soc.getLocalPort());
             try (OutputStreamWriter out = new OutputStreamWriter(soc.getOutputStream(), StandardCharsets.UTF_8)) {
                 String mess = "";
                 while (!mess.equals("FIN")) {
@@ -54,9 +59,16 @@ public class Client {
     public static void clientMulti() {
         try {
             String adr = ConsoleFdB.entreeString("adresse serveur : ");
-            String name = ConsoleFdB.entreeString("nom du client : ");
             int port = Serveur.PORT;
-            Socket soc = new Socket(adr, port);
+            int forceLocalPort = ConsoleFdB.entreeInt("port local à utiliser (0 pour automatique) : ");
+            Socket soc = new Socket(adr, port, null, forceLocalPort);
+//            Socket soc = new Socket(adr, port);
+            System.out.println("Connexion acceptée :");
+            System.out.println("  Adresse serveur : " + soc.getInetAddress().getHostAddress());
+            System.out.println("  Port serveur    : " + soc.getPort());
+            System.out.println("  Adresse locale : " + soc.getLocalAddress().getHostAddress());
+            System.out.println("  Port local     : " + soc.getLocalPort());
+            String name = ConsoleFdB.entreeString("nom du client : ");
             try (OutputStreamWriter out = new OutputStreamWriter(soc.getOutputStream(), StandardCharsets.UTF_8)) {
                 out.write(name + "\n");
                 String mess = "";
@@ -72,8 +84,8 @@ public class Client {
     }
 
     public static void main(String[] args) {
-        clientDirect();
-//        clientMulti();
+//        clientDirect();
+        clientMulti();
     }
 
 }

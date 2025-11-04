@@ -91,6 +91,11 @@ public class Serveur {
             System.out.println("port : " + PORT);
             while (true) {
                 Socket soc = ss.accept();
+                System.out.println("Connexion acceptée :");
+                System.out.println("  Adresse client : " + soc.getInetAddress().getHostAddress());
+                System.out.println("  Port client    : " + soc.getPort());
+                System.out.println("  Adresse locale : " + soc.getLocalAddress().getHostAddress());
+                System.out.println("  Port local     : " + soc.getLocalPort());
                 new GereClient(soc).start();
             }
         } catch (IOException ex) {
@@ -100,8 +105,8 @@ public class Serveur {
     }
 
     public static void main(String[] args) {
-        sansThread();
-//        multiClient();
+//        sansThread();
+        multiClient();
     }
 
 }
