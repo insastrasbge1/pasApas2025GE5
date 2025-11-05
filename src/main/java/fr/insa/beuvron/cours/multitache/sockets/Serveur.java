@@ -18,6 +18,7 @@ along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.insa.beuvron.cours.multitache.sockets;
 
+import fr.insa.beuvron.utils.ConsoleFdB;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -32,15 +33,14 @@ import java.nio.charset.StandardCharsets;
  */
 public class Serveur {
 
-    public static final int PORT = 50001;
-
     public static void sansThread() {
         try {
             Inet4Address host = INetAdressUtil.premiereAdresseNonLoopback();
-            ServerSocket ss = new ServerSocket(PORT, 10, host);
+            int port = ConsoleFdB.entreeInt("port du serveur (0 pour automatique) : ");
+            ServerSocket ss = new ServerSocket(port, 10, host);
             System.out.println("Serveur en attente :");
             System.out.println("ip : " + host.getHostAddress());
-            System.out.println("port : " + PORT);
+            System.out.println("port : " + port);
             Socket soc = ss.accept();
             System.out.println("Connexion acceptée :");
             System.out.println("  Adresse client : " + soc.getInetAddress().getHostAddress());
@@ -85,10 +85,11 @@ public class Serveur {
     public static void multiClient() {
         try {
             Inet4Address host = INetAdressUtil.premiereAdresseNonLoopback();
-            ServerSocket ss = new ServerSocket(PORT, 10, host);
+            int port = ConsoleFdB.entreeInt("port du serveur (0 pour automatique) : ");
+            ServerSocket ss = new ServerSocket(port, 10, host);
             System.out.println("Serveur en attente :");
             System.out.println("ip : " + host.getHostAddress());
-            System.out.println("port : " + PORT);
+            System.out.println("port : " + port);
             while (true) {
                 Socket soc = ss.accept();
                 System.out.println("Connexion acceptée :");

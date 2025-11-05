@@ -34,7 +34,7 @@ public class Client {
     public static void clientDirect() {
         try {
             String adr = ConsoleFdB.entreeString("adresse serveur : ");
-            int port = Serveur.PORT;
+            int port = ConsoleFdB.entreeInt("port du serveur : ");
             int forceLocalPort = ConsoleFdB.entreeInt("port local à utiliser (0 pour automatique) : ");
             Socket soc = new Socket(adr, port, null, forceLocalPort);
 //            Socket soc = new Socket(adr, port);
@@ -59,7 +59,7 @@ public class Client {
     public static void clientMulti() {
         try {
             String adr = ConsoleFdB.entreeString("adresse serveur : ");
-            int port = Serveur.PORT;
+            int port = ConsoleFdB.entreeInt("port du serveur : ");
             int forceLocalPort = ConsoleFdB.entreeInt("port local à utiliser (0 pour automatique) : ");
             Socket soc = new Socket(adr, port, null, forceLocalPort);
 //            Socket soc = new Socket(adr, port);
